@@ -1,6 +1,6 @@
 import jwtInterceptor from "@/shared/jwtInterceptor";
 
-const API_URL = this.$store.getters.getServerUrl
+const API_URL = "http://127.0.0.1:8000/api/"
 
 const state = () => ({
     products:[],
@@ -28,7 +28,6 @@ const actions = {
                     console.log(error)
                 })
         if(response && response.data){
-            console.log(response.data.total)
             commit('setCount', response.data.total)
             commit('setProducts',response.data.results)
         }
@@ -47,7 +46,7 @@ const actions = {
         await jwtInterceptor.post(`${API_URL}products/`, payload.data)
             .then(res => commit('setNewProduct', res.data))
             .catch(error => {
-                console.log(error)
+                console.log(error.response)
             })
     },
     async deleteProduct({commit}, id){
@@ -63,6 +62,17 @@ const actions = {
             .catch(error => {
                 console.log(error)
             })
+    },
+    async getSearchProduct({commit}, payload){
+        const response =
+            await jwtInterceptor.get(`${API_URL}products/?search=${payload}`)
+                .catch(error => {
+                    console.log(error)
+                })
+        if(response && response.data){
+            commit('setCount', response.data.total)
+            commit('setProducts',response.data.results)
+        }
     },
 
 }

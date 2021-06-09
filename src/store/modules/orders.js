@@ -1,6 +1,6 @@
 import jwtInterceptor from "@/shared/jwtInterceptor";
 
-const API_URL = this.$store.getters.getServerUrl
+const API_URL = "http://127.0.0.1:8000/api/"
 
 const state = () => ({
     orders:[]
@@ -32,7 +32,6 @@ const actions = {
                 })
     },
     async deleteOrder({commit}, payload){
-        console.log(payload)
         const response = await jwtInterceptor.delete(`${API_URL}orders/${payload.pk}`)
             .catch(error =>{
                 console.log(error.message)
@@ -40,7 +39,6 @@ const actions = {
         if(response){
             commit('deleteOrder',payload.pk)
         }
-        console.log(this.orders)
 
     }
 

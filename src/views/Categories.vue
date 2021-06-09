@@ -19,13 +19,18 @@
     <Loader v-if="loadingCategory"/>
     <section v-else class="categories">
       <div class="collection ">
-        <a
-            v-for="(category, i) in categories"
-            :key="category.id"
-            class="collection-item"
-            :class="{ active: i === activeCategory}"
-            @click="selectCategories(category.id, i)"
-        >{{category.name}}</a>
+        <div v-if="categories.length!==0">
+          <a
+              v-for="(category, i) in categories"
+              :key="category.id"
+              class="collection-item"
+              :class="{ active: i === activeCategory}"
+              @click="selectCategories(category.id, i)"
+          >{{category.name}}</a>
+        </div>
+        <div v-else>
+          <span>Категорий пока что нет...</span>
+        </div>
         <a
             class="collection-item"
             style="color:#26A69A"
@@ -37,26 +42,30 @@
 
       <Loader v-if="loadingSubcategory"/>
 
-      <div v-else class="collection" style="width: 60%">
-        <a class="collection-header">
-          <h4>
-            {{categories[activeCategory].name}}
-            <button @click="showCategoryPopup" class="btn-small btn">
-              <i class="tiny material-icons">create</i>
-            </button>
-          </h4>
-          <img :src="categories[activeCategory].representation" alt="">
-        </a>
-        <a
-            v-for="subcategory in subcategories"
-            :key="subcategory.id"
-            class="collection-item"
-            @click="showSubcategoryPopup(subcategory)"
-        >{{subcategory.name}}</a>
+      <div v-else-if="categories.length!==0" class="collection" style="width: 60%">
+        <div>
+          <a class="collection-header">
+            <h4>
+              {{categories[activeCategory].name}}
+              <button @click="showCategoryPopup" class="btn-small btn">
+                <i class="tiny material-icons">create</i>
+              </button>
+            </h4>
+            <img :src="categories[activeCategory].representation" alt="">
+          </a>
+        </div>
+        <div v-if="subcategories.length!==0">
+          <a
+              v-for="subcategory in subcategories"
+              :key="subcategory.id"
+              class="collection-item"
+              @click="showSubcategoryPopup(subcategory)"
+          >{{subcategory.name}}</a>
+        </div>
         <a
             class="collection-item"
             @click="showSubcategoryPopup({name:'',category:categories[activeCategory].id})"
-            style="color:#26A69A">
+            style="color:#26A69A; border-top: 1px solid #ddd;">
           Добавить новую подкатегорию
         </a>
       </div>
@@ -75,8 +84,8 @@
         data: () => ({
             loadingCategory: true,
             loadingSubcategory: true,
-            categories: null,
-            subcategories: null,
+            categories: [],
+            subcategories: [],
             activeCategory: 0,
             selectSubcategory: null,
             CategoryPopupVisible: false,
@@ -84,9 +93,11 @@
         }),
         async mounted() {
             await this.$store.dispatch('categories/getAllCategories')
-            this.categories = this.gettersGetAllCategories
-            await this.$store.dispatch('categories/getSelectSubcategories', this.categories[this.activeCategory].id)
-            this.subcategories = this.gettersGetSelectSubcategories
+            if (this.gettersGetAllCategories.length !== 0) {
+                this.categories = this.gettersGetAllCategories
+                await this.$store.dispatch('categories/getSelectSubcategories', this.categories[this.activeCategory].id)
+                this.subcategories = this.gettersGetSelectSubcategories
+            }
             this.loadingCategory = false
             this.loadingSubcategory = false
         },
@@ -120,9 +131,9 @@
                 this.CategoryPopupVisible = true
             },
             closeCategoryPopup() {
-                if (this.categories[this.categories.length-1].name==="") {
+                if (this.categories[this.categories.length - 1].name === "") {
                     this.categories.pop()
-                    this.activeCategory=0
+                    this.activeCategory = 0
                 }
                 this.CategoryPopupVisible = false
             },
@@ -135,7 +146,7 @@
                 this.loadingCategory = false
                 this.loadingSubcategory = false
             },
-            closeWhitDeleteCategoryPopup(){
+            closeWhitDeleteCategoryPopup() {
                 this.closeWhitChangeCategoryPopup()
                 this.activeCategory = 0
             },
@@ -186,6 +197,7 @@
 
   a.collection-item {
     color: black;
+    border-top: 1px solid #e0e0e0;
   }
 
   .collection-item.active {

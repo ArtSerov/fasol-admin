@@ -33,7 +33,8 @@
         >Пароль не меньше 4 символов</small>
       </div>
     </div>
-    <div class="card-action">
+    <div class="card-action" style="display: flex; flex-direction: column;">
+      <span v-if="gettersGetError" style="color: red;align-self: center; ">Ошибка входа</span>
       <div>
         <button
             class="btn waves-effect waves-light auth-submit"
@@ -55,16 +56,19 @@
     import {helpers, required, minLength} from "vuelidate/lib/validators"
     import {mapActions, mapGetters} from 'vuex'
     import router from "@/router";
+
     const phoneMask = helpers.regex('phoneMask', /^89.\d{8}$/)
     export default {
         name: 'login',
         data: () => ({
             phone: '',
             password: '',
+            error: null,
         }),
         computed: {
-            ...mapGetters('auth',{
-                gettersLoginApiStatus:'getLoginApiStatus'
+            ...mapGetters('auth', {
+                gettersLoginApiStatus: 'getLoginApiStatus',
+                gettersGetError: 'getAuthError',
             })
         },
         validations: {
@@ -72,22 +76,22 @@
             password: {required, minLength: minLength(4)}
         },
         methods: {
-            ...mapActions('auth',{
-                actionLogin:'login'
+            ...mapActions('auth', {
+                actionLogin: 'login'
             }),
-            async login(){
-                if(this.$v.$invalid){
+            async login() {
+                if (this.$v.$invalid) {
                     this.$v.$touch()
                     return
                 }
-                await this.actionLogin({phone:this.phone, password:this.password})
-                if(this.gettersLoginApiStatus === 'success'){
-                    alert('login success')
+                await this.actionLogin({phone: this.phone, password: this.password})
+                if (this.gettersLoginApiStatus === 'success') {
+                    this.$message("Вход выполнен успешно")
                     router.push('/orders')
-                }else{
-                    alert('filed to login')
+                } else {
+                    this.error = this.gettersGetError
                 }
             }
-        }
+        },
     }
 </script>

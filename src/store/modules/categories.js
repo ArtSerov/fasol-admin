@@ -1,6 +1,6 @@
 import jwtInterceptor from "@/shared/jwtInterceptor";
 
-const API_URL = this.$store.getters.getServerUrl
+const API_URL = "http://127.0.0.1:8000/api/"
 
 const state = () => ({
     categories:[],
@@ -47,7 +47,6 @@ const actions = {
     },
     async patchChangeCategory(context, payload){
         await jwtInterceptor.patch(`${API_URL}categories/${payload.id}`, payload.data)
-            .then(res => console.log(res))
             .catch(error => {
                 console.log(error)
             })
@@ -75,19 +74,20 @@ const actions = {
         }
     },
     async createSubcategory({commit}, payload){
-        console.log(payload)
         await jwtInterceptor.post(`${API_URL}subcategories/`,
             {
                 category:payload.category,
                 name:payload.name
             })
-            .then(res => commit('setNewSubcategory', res.data))
+            .then(res => {
+                commit('setNewSubcategory', res.data)
+            })
             .catch(error => {
                 console.log(error)
             })
     },
     async patchChangeSubcategory(context, payload){
-        await jwtInterceptor.patch(`${API_URL}subcategories/${payload.id}`,{
+        await jwtInterceptor.put(`${API_URL}subcategories/${payload.id}`,{
             name:payload.name
         })
             .catch(error =>{

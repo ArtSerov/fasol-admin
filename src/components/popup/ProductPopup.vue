@@ -9,7 +9,7 @@
         <div v-else class="card-content">
           <span class="card-title" style="font-weight:bold">Продукт {{name}}</span>
 
-          <div class="input-field">
+          <div class="input-field" v-if="subcategories.length!==0">
             <select id="subcategory" v-model="subcategoryId" ref="select">
               <option
                   v-for="sub of subcategories" :key="sub.id" :value="sub.id"
@@ -17,6 +17,15 @@
               </option>
             </select>
             <label for="subcategory">Подкатегория</label>
+          </div>
+          <div v-else class="input-field">
+            <input
+                id="subcategory_disabled"
+                type="text"
+                disabled
+                value="Подкатегорий не добавленно"
+            >
+            <label for="subcategory_disabled">Подкатегория</label>
           </div>
 
           <div class="input-field">
@@ -124,7 +133,9 @@
             if (this.productId !== "") {
                 await this.$store.dispatch('products/getProduct', this.productId)
                 const product = this.gettersGetSelectProduct
-                this.subcategoryId = product.subcategory.id
+                if(product.subcategory){
+                    this.subcategoryId = product.subcategory.id
+                }
                 this.name = product.name
                 this.representation = product.representation
                 this.weight = product.weight
@@ -133,9 +144,11 @@
                 this.description = product.description
             }
             await this.$store.dispatch('categories/getAllSubcategories')
-            this.subcategories = this.gettersGetAllSubcategories
-            if(this.productId === ""){
-                this.subcategoryId = this.subcategories[0].id
+            if (this.gettersGetAllSubcategories.length !== 0) {
+                this.subcategories = this.gettersGetAllSubcategories
+                if (this.productId === "") {
+                    this.subcategoryId = this.subcategories[0].id
+                }
             }
             setTimeout(() => {
                 this.select = Materialize.FormSelect.init(this.$refs.select)
@@ -185,7 +198,9 @@
                 if (this.selectedFile) {
                     fd.append('representation', this.selectedFile, this.selectedFile.name)
                 }
-                fd.append('subcategory', this.subcategoryId)
+                if(this.subcategoryId!==""){
+                    fd.append('subcategory', this.subcategoryId)
+                }
                 fd.append('name', this.name)
                 fd.append('weight', this.weight)
                 fd.append('composition', this.composition)
@@ -205,7 +220,7 @@
                 this.$emit('closeWhitChangeProductPopup', {
                     id: this.productId,
                     name: this.name,
-                    subcategory: this.subcategories[idx].name,
+                    subcategory: this.subcategories.length!==0 ? this.subcategories[idx].name : "Не выбрана",
                     price: this.price,
                     representation: this.representation
                 })

@@ -1,7 +1,7 @@
 import axios from "axios";
 import store from '@/store/index'
 
-const API_URL = 'http://zamay86.pythonanywhere.com/api/'
+const API_URL = 'https://fasoldelivery-admin.ru/api/'
 
 const jwtInterceptor = axios.create()
 

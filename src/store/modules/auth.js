@@ -1,7 +1,7 @@
 import {jwtDecrypt, tokenAlive} from '@/shared/jwtHelper'
 import axios from "axios";
 
-const API_URL = this.$store.getters.getServerUrl
+const API_URL = "http://127.0.0.1:8000/api/"
 
 const state = () => ({
     authData: {
@@ -10,6 +10,7 @@ const state = () => ({
         tokenExp: "",
         userId: "",
     },
+    error:'',
     loginApiStatus: ''
 })
 
@@ -24,12 +25,11 @@ const getters = {
         if (!state.authData.tokenExp) {
             return false
         }
-        if (!tokenAlive(state.authData.tokenExp)){
-            const decrypted = jwtDecrypt(state.authData.refreshToken)
-            return tokenAlive(decrypted.exp)
-        }
         return tokenAlive(state.authData.tokenExp)
-    }
+    },
+    getAuthError(state) {
+        return state.error
+    },
 
 }
 
@@ -41,7 +41,7 @@ const actions = {
             password: payload.password
         })
             .catch(error => {
-                console.log(error)
+                commit('setError', (error.response.data.detail))
             })
         const decrypted = jwtDecrypt(response.data['access'])
         if (response && response.data && decrypted.isAdmin) {
@@ -82,6 +82,9 @@ const mutations = {
     },
     setLoginApiStatus(state, data) {
         state.loginApiStatus = data
+    },
+    setError(state,data){
+        state.error = data
     }
 }
 

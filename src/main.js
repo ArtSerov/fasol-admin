@@ -8,9 +8,11 @@ import Loader from "@/components/app/Loader";
 import './registerServiceWorker'
 import 'materialize-css/dist/js/materialize.min'
 import currencyFilter from "@/filters/cyrrency.filter";
+import message from "@/shared/message";
 
 Vue.config.productionTip = false
 Vue.use(Vuelidate)
+Vue.use(message)
 Vue.filter('date', dateFilter)
 Vue.filter('currency', currencyFilter)
 Vue.component('Loader', Loader)

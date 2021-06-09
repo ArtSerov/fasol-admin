@@ -13,21 +13,24 @@
         <i class="tiny material-icons">add</i>
       </button>
       <div style="display: flex; align-items: center;" >
-        <input type="search" id="site-search" name="q"
+        <input type="search" id="site-search" v-model="searchCondition"
                placeholder="Поиск продукта">
-        <button class="btn-small">
+        <button class="btn-small" @click="searchProduct(searchCondition)">
           <i class="material-icons">search</i>
         </button>
       </div>
     </div>
     <Loader v-if="loading"/>
+    <div v-else-if="products.length===0">
+      <h3>Продуктов пока что нет...</h3>
+    </div>
     <div v-else class="products-container">
 
       <div
-           v-for="product in products"
-           :key="product.id"
-           style="display: flex; flex-direction: column"
-           class="card">
+          v-for="product in products"
+          :key="product.id"
+          style="display: flex; flex-direction: column"
+          class="card">
         <div class="card-image">
           <img :src="product.representation" :alt="product.name">
           <a class="btn-floating halfway-fab waves-effect waves-light #26A69A"
@@ -38,13 +41,13 @@
         <div class="property">{{product.name}}</div>
         <div class="property" style="margin-top:auto;"><b>Подкатегория:</b>
         </div>
-        <div class="property">{{product.subcategory}}</div>
+        <div class="property">{{product.subcategory===null?'Не выбрана':product.subcategory}}</div>
         <div class="property" style="margin-top:auto; padding-bottom: 10px"><b>Цена:</b> {{product.price |
           currency('RUB')}}
         </div>
       </div>
     </div>
-    <Pagination
+    <Pagination v-if="total>1"
         :total="total"
         :item="products.length"
         @pageChanged="loadListProducts"
@@ -65,7 +68,7 @@
             products: [],
             productPopupVisible: false,
             productDetail: null,
-            // subcategories:[],
+            searchCondition: "",
             page:1,
             total:0
         }),
@@ -107,17 +110,13 @@
                 this.productPopupVisible = false
                 this.loadListProducts(this.count)
             },
-            async searchProduct(){
+            async searchProduct(condition){
+                this.loading = true
+                await this.$store.dispatch('products/getSearchProduct',condition)
+                this.products = this.gettersGetAllProducts
+                this.total = this.gettersGetProductsCount
+                this.loading = false
             }
-            // getSubcetegories(products){
-            //     let subcategories = [];
-            //     for (let product of products) {
-            //         if (!subcategories.includes(product.subcategory.name)) {
-            //             subcategories.push(product.subcategory.name);
-            //         }
-            //     }
-            //     return subcategories;
-            // }
 
         },
         destroyed() {
@@ -172,4 +171,5 @@
   ::-webkit-scrollbar-thumb {
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
+
 </style>

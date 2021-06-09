@@ -7,9 +7,6 @@ import productsModule from '@/store/modules/products'
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state: {
-        backendUrl: "http://127.0.0.1:1337/api/"
-    },
     mutations: {
     },
     actions: {
@@ -20,7 +17,4 @@ export default new Vuex.Store({
         categories:categoriesModule,
         products:productsModule
     },
-    getServerUrl: state =>{
-        return state.backendUrl
-    }
 });

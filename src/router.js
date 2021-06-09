@@ -9,6 +9,12 @@ const router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
+            path: '/',
+            name: 'main',
+            meta: {layout: 'auth', authRequired: false},
+            component:()=>import('./views/Main')
+        },
+        {
             path: '/login',
             name: 'login',
             meta: {layout: 'auth', authRequired: false},
