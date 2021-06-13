@@ -3,75 +3,76 @@ import jwtInterceptor from "@/shared/jwtInterceptor";
 const API_URL = "http://127.0.0.1:8000/api/"
 
 const state = () => ({
-    products:[],
-    productCount:0,
-    product:null
+    products: [],
+    productCount: 0,
+    product: null
 })
 
 const getters = {
-    allProducts(state){
+    allProducts(state) {
         return state.products
     },
-    selectProduct(state){
+    selectProduct(state) {
         return state.product
     },
-    productsCount(state){
+    productsCount(state) {
         return state.productCount
     }
 }
 
 const actions = {
-    async getAllProducts({commit},page){
+    async getAllProducts({commit}, page) {
         const response =
             await jwtInterceptor.get(`${API_URL}products/?page=${page}`)
-                .catch(error =>{
+                .catch(error => {
                     console.log(error)
                 })
-        if(response && response.data){
+        if (response && response.data) {
             commit('setCount', response.data.total)
-            commit('setProducts',response.data.results)
+            commit('setProducts', response.data.results)
         }
     },
-    async getProduct({commit}, id){
+    async getProduct({commit}, id) {
         const response =
             await jwtInterceptor.get(`${API_URL}products/${id}`)
-                .catch(error =>{
+                .catch(error => {
                     console.log(error)
                 })
-        if (response && response.data){
+        if (response && response.data) {
             commit('setProduct', response.data)
         }
     },
-    async createProduct({commit}, payload){
+    async createProduct({commit}, payload) {
         await jwtInterceptor.post(`${API_URL}products/`, payload.data)
-            .then(res => commit('setNewProduct', res.data))
+            .then(res => {
+                    commit('setNewProduct', res.data)
+            })
             .catch(error => {
                 console.log(error.response)
             })
     },
-    async deleteProduct({commit}, id){
+    async deleteProduct({commit}, id) {
         await jwtInterceptor.delete(`${API_URL}products/${id}`)
             .catch(error => {
                 console.log(error)
             })
-        commit('removeProduct',id)
+        commit('removeProduct', id)
     },
-    async patchChangeProduct(context, payload){
+    async patchChangeProduct(context, payload) {
         await jwtInterceptor.patch(`${API_URL}products/${payload.id}`, payload.data)
-            .then(res => console.log(res))
             .catch(error => {
-                console.log(error)
+                console.log(error.response)
             })
     },
-    async getSearchProduct({commit}, payload){
+    async getSearchProduct({commit}, payload) {
         const response =
             await jwtInterceptor.get(`${API_URL}products/?search=${payload}`)
                 .catch(error => {
                     console.log(error)
                 })
-        if(response && response.data){
+        if (response && response.data) {
             commit('setCount', response.data.total)
-            commit('setProducts',response.data.results)
+            commit('setProducts', response.data.results)
         }
     },
 

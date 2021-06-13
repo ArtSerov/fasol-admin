@@ -32,9 +32,16 @@
             <input
                 id="name"
                 type="text"
-                v-model="name"
+                v-model.trim="name"
+                :class="{invalid: ($v.name.$dirty && !$v.name.required) || ($v.name.$dirty && !$v.name.minLength)}"
             >
             <label for="name">Название</label>
+            <small class="helper-text invalid"
+                   v-if="$v.name.$dirty && !$v.name.required"
+            >Введите название</small>
+            <small class="helper-text invalid"
+                   v-if="$v.name.$dirty && !$v.name.minLength"
+            >Не меньше 3 символов</small>
           </div>
 
           <img :src="representation" :alt="representation" style="width: 200px; height: 150px">
@@ -52,9 +59,16 @@
             <input
                 id="weight"
                 type="text"
-                v-model="weight"
+                v-model.trim="weight"
+                :class="{invalid: ($v.weight.$dirty && !$v.weight.required) || ($v.weight.$dirty && !$v.weight.minLength)}"
             >
             <label for="weight">Вес</label>
+            <small class="helper-text invalid"
+                   v-if="$v.weight.$dirty && !$v.weight.required"
+            >Укажите вес <i>(прим. 500 грамм)</i></small>
+            <small class="helper-text invalid"
+                   v-if="$v.weight.$dirty && !$v.weight.minLength"
+            >Не меньше 2 символов</small>
           </div>
 
           <div class="input-field">
@@ -70,11 +84,22 @@
             <input
                 id="price"
                 type="number"
-                v-model="price"
+                v-model.trim="price"
                 min="0" value="0" step="0.01"
+                :class="{invalid: ($v.price.$dirty && !$v.price.required) || ($v.price.$dirty && !$v.price.minLength)}"
             >
             <label class="active" for="price">Цена</label>
+            <small class="helper-text invalid"
+                   v-if="$v.weight.$dirty && !$v.weight.required"
+            >Введите цену</small>
           </div>
+
+          <p>
+            <label>
+              <input type="checkbox" class="filled-in" :checked="in_stock" @change="in_stock= !in_stock"/>
+              <span>В наличии</span>
+            </label>
+          </p>
 
           <div class="input-field">
             <textarea id="description" v-model="description" class="materialize-textarea"></textarea>
@@ -112,6 +137,7 @@
 <script>
     import Materialize from "materialize-css";
     import {mapGetters} from "vuex";
+    import {required, minLength} from "vuelidate/lib/validators"
 
     export default {
         name: "ProductPopup",
@@ -127,8 +153,14 @@
             weight: "",
             composition: "",
             price: null,
+            in_stock:true,
             selectedFile: null,
         }),
+        validations: {
+            name: {required, minLength: minLength(3)},
+            weight: {required, minLength: minLength(2)},
+            price: {required,}
+        },
         async mounted() {
             if (this.productId !== "") {
                 await this.$store.dispatch('products/getProduct', this.productId)
@@ -142,6 +174,7 @@
                 this.composition = product.composition
                 this.price = product.price
                 this.description = product.description
+                this.in_stock = product.in_stock
             }
             await this.$store.dispatch('categories/getAllSubcategories')
             if (this.gettersGetAllSubcategories.length !== 0) {
@@ -190,10 +223,10 @@
                 this.representation = URL.createObjectURL(this.selectedFile);
             },
             async changeProduct() {
-                // if (this.$v.$invalid) {
-                //     this.$v.$touch()
-                //     return
-                // }
+                if (this.$v.$invalid) {
+                    this.$v.$touch()
+                    return
+                }
                 const fd = new FormData()
                 if (this.selectedFile) {
                     fd.append('representation', this.selectedFile, this.selectedFile.name)
@@ -206,6 +239,7 @@
                 fd.append('composition', this.composition)
                 fd.append('price', this.price)
                 fd.append('description', this.description)
+                fd.append('in_stock', this.in_stock)
                 const payload = {
                     id: this.productId,
                     data: fd
@@ -222,7 +256,8 @@
                     name: this.name,
                     subcategory: this.subcategories.length!==0 ? this.subcategories[idx].name : "Не выбрана",
                     price: this.price,
-                    representation: this.representation
+                    representation: this.representation,
+                    in_stock: this.in_stock
                 })
             },
             async deleteProduct() {

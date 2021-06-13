@@ -48,7 +48,7 @@ const actions = {
     async patchChangeCategory(context, payload){
         await jwtInterceptor.patch(`${API_URL}categories/${payload.id}`, payload.data)
             .catch(error => {
-                console.log(error)
+                console.log(error.response)
             })
     },
 

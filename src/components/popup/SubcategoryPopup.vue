@@ -8,7 +8,7 @@
             <input
                 id="name"
                 type="text"
-                v-model="name"
+                v-model.trim="name"
                 :class="{invalid: ($v.name.$dirty && !$v.name.minLength)}"
             >
             <label for="name">Название</label>
@@ -59,7 +59,7 @@
 
         }),
         validations: {
-            name: {required, minLength: minLength(1)},
+            name: {required, minLength: minLength(3)},
         },
         created() {
             const {name} = this.subcategory

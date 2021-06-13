@@ -54,8 +54,8 @@
             orders: null,
             statuses: [
                 {title: 'НОВЫЕ ЗАКАЗЫ', status: 'new'},
-                {title: 'ОБРАБОТАНЫЕ ЗАКАЗЫ', status: 'ready'},
-                {title: 'ВЫПОЛНЕНЫЕ ЗАКАЗЫ', status: 'completed'},
+                {title: 'ОБРАБОТАННЫЕ ЗАКАЗЫ', status: 'ready'},
+                {title: 'ВЫПОЛНЕННЫЕ ЗАКАЗЫ', status: 'completed'},
                 {title: 'ОТМЕНЁННЫЕ ЗАКАЗЫ', status: 'cancelled'},
             ],
             activeItem: 0,

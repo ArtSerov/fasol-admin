@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul class="pagination">
-      <li v-for="p in total" :key="p" :class="{active: currentPage===p}">
+      <li v-for="p in total" :key="p" :class="{active: (currentPage===p || current===p)}">
         <a @click="changePage(p)">{{p}}</a>
       </li>
     </ul>
@@ -11,7 +11,7 @@
 <script>
     export default {
         name: "Pagination",
-        props: ['total', 'item'],
+        props: ['total', 'current'],
         data: () => ({
             currentPage: 1
         }),

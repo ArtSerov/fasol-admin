@@ -8,13 +8,16 @@
             <input
                 id="name"
                 type="text"
-                v-model="name"
+                v-model.trim="name"
                 :class="{invalid: ($v.name.$dirty && !$v.name.minLength)}"
             >
             <label for="name">Название</label>
             <small class="helper-text invalid"
                    v-if="$v.name.$dirty && !$v.name.required"
             >Введите название категории</small>
+            <small class="helper-text invalid"
+                   v-if="$v.name.$dirty && !$v.name.minLength"
+            >Не мение 3 символов</small>
           </div>
           <img :src="representation" :alt="representation" style="width: 200px; height: 150px">
           <div class="input-field">
@@ -65,10 +68,11 @@
             name: "",
             representation: "",
             selectedFile: null,
+            notFile:false
 
         }),
         validations: {
-            name: {required, minLength: minLength(1)},
+            name: {required, minLength: minLength(5)},
         },
         created() {
             const {name, representation} = this.category
